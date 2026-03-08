@@ -1,0 +1,1 @@
+ALTER TABLE public.ads ADD COLUMN IF NOT EXISTS ad_code text DEFAULT NULL;
