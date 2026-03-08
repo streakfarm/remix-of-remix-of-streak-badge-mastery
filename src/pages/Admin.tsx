@@ -141,6 +141,7 @@ export default function Admin() {
                   {tab.id === 'badges' && <AdminBadgesPanel />}
                   {tab.id === 'events' && <AdminEventsPanel />}
                   {tab.id === 'boxes' && <AdminBoxPanel />}
+                  {tab.id === 'ads' && <AdminAdsPanel />}
                   {tab.id === 'notifications' && <AdminNotificationsPanel />}
                   {tab.id === 'config' && <AdminConfigPanel />}
                 </motion.div>
