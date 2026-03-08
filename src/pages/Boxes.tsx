@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { BoxCard } from '@/components/box/BoxCard';
 import { BoxOpenAnimation } from '@/components/box/BoxOpenAnimation';
@@ -8,6 +9,7 @@ import { useTelegram } from '@/hooks/useTelegram';
 import { Package, Clock, History, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useEffect, useState as useReactState } from 'react';
+import { AnimatePresence } from 'framer-motion';
 
 export default function Boxes() {
   const { boxes, openedBoxes, expiredCount, openBox, availableCount, nextBoxTime, isLoading } = useBoxes();
