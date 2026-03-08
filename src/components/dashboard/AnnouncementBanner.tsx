@@ -1,21 +1,14 @@
-import { useState } from 'react';
-import { Megaphone, X, Sparkles, Rocket } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '@/lib/utils';
+import { Megaphone, Sparkles, Rocket } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export function AnnouncementBanner() {
-  const [dismissed, setDismissed] = useState(false);
-
-  if (dismissed) return null;
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0, y: -10, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: -10, scale: 0.98 }}
-        className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/15 via-secondary/10 to-accent/15"
-      >
+    <motion.div
+      initial={{ opacity: 0, y: -10, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/15 via-secondary/10 to-accent/15"
+    >
         {/* Animated glow pulse */}
         <div className="absolute inset-0 pointer-events-none">
           <motion.div
@@ -30,13 +23,6 @@ export function AnnouncementBanner() {
         </div>
 
         <div className="relative z-10 p-4">
-          {/* Dismiss button */}
-          <button
-            onClick={() => setDismissed(true)}
-            className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
 
           {/* Header with pulsing icon */}
           <div className="flex items-center gap-2.5 mb-2.5">
@@ -95,6 +81,5 @@ export function AnnouncementBanner() {
           </div>
         </div>
       </motion.div>
-    </AnimatePresence>
   );
 }
