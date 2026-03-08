@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, CheckSquare, Trophy, Users, User } from 'lucide-react';
+import { Home, CheckSquare, Trophy, Users, User, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTelegram } from '@/hooks/useTelegram';
 import { useBoxes } from '@/hooks/useBoxes';
