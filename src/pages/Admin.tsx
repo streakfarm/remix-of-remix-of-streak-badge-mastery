@@ -80,7 +80,9 @@ export default function Admin() {
     { id: 'events', label: 'Events', icon: Calendar },
     { id: 'boxes', label: 'Boxes', icon: Package },
     { id: 'ads', label: 'Ads', icon: Megaphone },
+    { id: 'themes', label: 'Themes', icon: Paintbrush },
     { id: 'notifications', label: 'Notify', icon: Bell },
+    { id: 'config', label: 'Config', icon: Settings },
     { id: 'config', label: 'Config', icon: Settings },
   ];
 
