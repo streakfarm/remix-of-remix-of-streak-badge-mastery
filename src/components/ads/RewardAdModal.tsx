@@ -106,7 +106,7 @@ export function RewardAdModal({
                 <Coins className="w-3 h-3 text-yellow-500" />
                 <span className="font-bold text-yellow-500">+{pointsReward}</span>
               </div>
-              {canSkip && !completed && (
+              {completed && (
                 <button onClick={onClose} className="p-1 rounded-full hover:bg-muted">
                   <X className="w-4 h-4" />
                 </button>
