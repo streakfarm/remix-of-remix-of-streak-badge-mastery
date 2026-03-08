@@ -14,6 +14,7 @@ const queryClient = new QueryClient();
 
 function AppContent() {
   const { isLoading, isAuthenticated, authError, retryAuth } = useAuth();
+  useTheme(); // Apply active theme globally
 
   console.log("AppContent state:", { isLoading, isAuthenticated, authError });
 
