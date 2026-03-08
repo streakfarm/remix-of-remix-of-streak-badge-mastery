@@ -5,13 +5,13 @@ import { StreakDisplay } from '@/components/dashboard/StreakDisplay';
 import { BoxPreview } from '@/components/dashboard/BoxPreview';
 import { BadgeShowcase } from '@/components/dashboard/BadgeShowcase';
 import { WalletBanner } from '@/components/gamification/WalletBanner';
+import { EventsBanner } from '@/components/events/EventsBanner';
 import { useProfile } from '@/hooks/useProfile';
 import { motion } from 'framer-motion';
 
 const Index = () => {
   const { profile, isLoading } = useProfile();
 
-  // Loading is handled by SplashScreen in App.tsx
   if (isLoading) {
     return null;
   }
@@ -21,6 +21,9 @@ const Index = () => {
       <div className="px-4 py-4 space-y-4 max-w-lg mx-auto pb-24">
         {/* Wallet Banner */}
         <WalletBanner />
+
+        {/* Live Events */}
+        <EventsBanner />
 
         {/* Streak display */}
         <StreakDisplay />

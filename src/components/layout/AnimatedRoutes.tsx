@@ -8,6 +8,7 @@ import Badges from '@/pages/Badges';
 import Tasks from '@/pages/Tasks';
 import Profile from '@/pages/Profile';
 import Leaderboard from '@/pages/Leaderboard';
+import Events from '@/pages/Events';
 import Admin from '@/pages/Admin';
 import Auth from '@/pages/Auth';
 import NotFound from '@/pages/NotFound';
@@ -35,6 +36,7 @@ export function AnimatedRoutes() {
         <Route path="/boxes" element={<ProtectedRoute><PageTransition><Boxes /></PageTransition></ProtectedRoute>} />
         <Route path="/badges" element={<ProtectedRoute><PageTransition><Badges /></PageTransition></ProtectedRoute>} />
         <Route path="/tasks" element={<ProtectedRoute><PageTransition><Tasks /></PageTransition></ProtectedRoute>} />
+        <Route path="/events" element={<ProtectedRoute><PageTransition><Events /></PageTransition></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><PageTransition><Profile /></PageTransition></ProtectedRoute>} />
         <Route path="/leaderboard" element={<ProtectedRoute><PageTransition><Leaderboard /></PageTransition></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute><PageTransition><Admin /></PageTransition></ProtectedRoute>} />
