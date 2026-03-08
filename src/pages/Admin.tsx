@@ -29,6 +29,7 @@ import { AdminConfigPanel } from '@/components/admin/AdminConfigPanel';
 import { AdminNotificationsPanel } from '@/components/admin/AdminNotificationsPanel';
 import { AdminBoxPanel } from '@/components/admin/AdminBoxPanel';
 import { AdminAdsPanel } from '@/components/admin/AdminAdsPanel';
+import { AdminThemePanel } from '@/components/admin/AdminThemePanel';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 export default function Admin() {
