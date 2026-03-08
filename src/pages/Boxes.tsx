@@ -15,6 +15,7 @@ export default function Boxes() {
   const { boxes, openedBoxes, expiredCount, openBox, availableCount, nextBoxTime, isLoading } = useBoxes();
   const { totalMultiplier } = useProfile();
   const { hapticFeedback } = useTelegram();
+  const navigate = useNavigate();
   
   const [openingBox, setOpeningBox] = useState<Box | null>(null);
   const [showAnimation, setShowAnimation] = useState(false);
