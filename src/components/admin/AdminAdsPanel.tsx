@@ -254,7 +254,10 @@ export function AdminAdsPanel() {
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {PLACEMENTS.map(p => (
-                        <SelectItem key={p} value={p} className="capitalize">{p}</SelectItem>
+                        <SelectItem key={p.value} value={p.value}>
+                          <span className="capitalize">{p.label}</span>
+                          <span className="text-xs text-muted-foreground ml-1">— {p.desc}</span>
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
