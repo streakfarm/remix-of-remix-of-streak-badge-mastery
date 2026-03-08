@@ -7,6 +7,7 @@ export interface Ad {
   description: string | null;
   image_url: string | null;
   redirect_url: string;
+  ad_code: string | null;
   placement: string;
   is_active: boolean;
   priority: number;

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAds, Ad } from '@/hooks/useAds';
+import { AdUnitRenderer } from './AdUnitRenderer';
 import { ExternalLink, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -26,9 +27,35 @@ export function AdBanner({ placement, className, dismissible = false, compact = 
 
   if (!currentAd || dismissed) return null;
 
+  // If ad has ad_code, render the ad unit
+  if (currentAd.ad_code) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={cn("relative rounded-xl border border-border bg-card overflow-hidden", className)}
+      >
+        <AdUnitRenderer adCode={currentAd.ad_code} className={compact ? "min-h-[60px]" : "min-h-[100px]"} />
+        <div className="absolute top-1 right-1 flex items-center gap-1">
+          <span className="text-[8px] bg-background/80 text-muted-foreground px-1 py-0.5 rounded">Ad</span>
+          {dismissible && (
+            <button
+              onClick={() => setDismissed(true)}
+              className="w-5 h-5 bg-background/80 rounded-full flex items-center justify-center hover:bg-muted"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          )}
+        </div>
+      </motion.div>
+    );
+  }
+
   const handleClick = () => {
     trackClick.mutate(currentAd.id);
-    window.open(currentAd.redirect_url, '_blank');
+    if (currentAd.redirect_url) {
+      window.open(currentAd.redirect_url, '_blank');
+    }
   };
 
   if (compact) {
@@ -91,8 +118,6 @@ export function AdBanner({ placement, className, dismissible = false, compact = 
           <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0 ml-2" />
         </div>
       </div>
-
-      {/* Ad label + dismiss */}
       <div className="absolute top-2 right-2 flex items-center gap-1">
         <span className="text-[10px] bg-background/80 text-muted-foreground px-1.5 py-0.5 rounded">Ad</span>
         {dismissible && (
