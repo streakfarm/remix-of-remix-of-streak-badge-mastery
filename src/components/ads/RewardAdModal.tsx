@@ -24,7 +24,6 @@ export function RewardAdModal({
   const [currentAd, setCurrentAd] = useState<Ad | null>(null);
   const [progress, setProgress] = useState(0);
   const [isWatching, setIsWatching] = useState(false);
-  const [canSkip, setCanSkip] = useState(false);
   const [completed, setCompleted] = useState(false);
 
   useEffect(() => {
@@ -34,7 +33,7 @@ export function RewardAdModal({
       if (ad) trackImpression.mutate(ad.id);
       setProgress(0);
       setIsWatching(false);
-      setCanSkip(false);
+      setCompleted(false);
       setCompleted(false);
     }
   }, [isOpen, ads]);
@@ -54,15 +53,12 @@ export function RewardAdModal({
       if (elapsed >= duration) {
         clearInterval(timer);
         setCompleted(true);
-        setCanSkip(true);
+        setCompleted(true);
       }
     }, interval);
 
-    const skipTimer = setTimeout(() => setCanSkip(true), 3000);
-
     return () => {
       clearInterval(timer);
-      clearTimeout(skipTimer);
     };
   }, [isWatching, completed, watchDuration]);
 
@@ -109,7 +105,7 @@ export function RewardAdModal({
                 <Coins className="w-3 h-3 text-yellow-500" />
                 <span className="font-bold text-yellow-500">+{pointsReward}</span>
               </div>
-              {canSkip && !completed && (
+              {completed && (
                 <button onClick={onClose} className="p-1 rounded-full hover:bg-muted">
                   <X className="w-4 h-4" />
                 </button>
