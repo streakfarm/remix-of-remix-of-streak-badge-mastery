@@ -11,9 +11,11 @@ export function FloatingCTA() {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const { profile } = useProfile();
-  const { hapticFeedback, shareRef } = useTelegram();
+  const { hapticFeedback, shareRef, isTelegram } = useTelegram();
 
-  const referralLink = `https://t.me/StreakFarmBot?start=${profile?.ref_code || ''}`;
+  const referralLink = isTelegram
+    ? `https://t.me/StreakFarmBot?start=${profile?.ref_code || ''}`
+    : `${window.location.origin}?ref=${profile?.ref_code || ''}`;
 
   const handleOpen = () => {
     hapticFeedback('medium');
