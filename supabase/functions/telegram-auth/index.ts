@@ -21,39 +21,183 @@ function validateTelegramData(initData: string, botToken: string): TelegramUser 
     const params = new URLSearchParams(initData);
     const hash = params.get("hash");
     if (!hash) return null;
-
-    // Remove hash from params for verification
     params.delete("hash");
-
-    // Sort params alphabetically and create data check string
     const dataCheckArr: string[] = [];
     params.forEach((value, key) => {
       dataCheckArr.push(`${key}=${value}`);
     });
     dataCheckArr.sort();
     const dataCheckString = dataCheckArr.join("\n");
-
-    // Create secret key from bot token
     const secretKey = createHmac("sha256", "WebAppData").update(botToken).digest();
-    
-    // Calculate hash
     const calculatedHash = createHmac("sha256", secretKey)
       .update(dataCheckString)
       .digest("hex");
-
     if (calculatedHash !== hash) {
       console.error("Hash mismatch:", { calculated: calculatedHash, received: hash });
       return null;
     }
-
-    // Parse user data
     const userJson = params.get("user");
     if (!userJson) return null;
-
     return JSON.parse(userJson) as TelegramUser;
   } catch (error) {
     console.error("Error validating Telegram data:", error);
     return null;
+  }
+}
+
+async function processReferral(supabaseAdmin: any, referrerProfileId: string, refereeProfileId: string) {
+  const REFERRER_BONUS = 100;
+  const REFEREE_BONUS = 50;
+
+  // Check if referral already exists
+  const { data: existing } = await supabaseAdmin
+    .from("referrals")
+    .select("id")
+    .eq("referee_id", refereeProfileId)
+    .maybeSingle();
+
+  if (existing) return; // Already referred
+
+  // Create referral entry
+  await supabaseAdmin.from("referrals").insert({
+    referrer_id: referrerProfileId,
+    referee_id: refereeProfileId,
+    referrer_bonus: REFERRER_BONUS,
+    referee_bonus: REFEREE_BONUS,
+  });
+
+  // Update referred_by on referee
+  await supabaseAdmin
+    .from("profiles")
+    .update({ referred_by: referrerProfileId })
+    .eq("id", refereeProfileId);
+
+  // Get referrer current points
+  const { data: referrerProfile } = await supabaseAdmin
+    .from("profiles")
+    .select("raw_points, total_referrals")
+    .eq("id", referrerProfileId)
+    .single();
+
+  if (referrerProfile) {
+    const newReferrerPoints = (referrerProfile.raw_points || 0) + REFERRER_BONUS;
+    const newTotalReferrals = (referrerProfile.total_referrals || 0) + 1;
+
+    // Update referrer points + referral count
+    await supabaseAdmin
+      .from("profiles")
+      .update({ raw_points: newReferrerPoints, total_referrals: newTotalReferrals })
+      .eq("id", referrerProfileId);
+
+    // Log referrer points in ledger
+    await supabaseAdmin.from("points_ledger").insert({
+      user_id: referrerProfileId,
+      amount: REFERRER_BONUS,
+      balance_after: newReferrerPoints,
+      source: "referral",
+      source_id: refereeProfileId,
+      description: `Referral bonus for inviting a friend`,
+    });
+
+    // Update referrer leaderboard
+    await supabaseAdmin
+      .from("leaderboards")
+      .update({
+        points_all_time: newReferrerPoints,
+        referral_count: newTotalReferrals,
+      })
+      .eq("user_id", referrerProfileId);
+  }
+
+  // Get referee current points
+  const { data: refereeProfile } = await supabaseAdmin
+    .from("profiles")
+    .select("raw_points")
+    .eq("id", refereeProfileId)
+    .single();
+
+  if (refereeProfile) {
+    const newRefereePoints = (refereeProfile.raw_points || 0) + REFEREE_BONUS;
+
+    // Update referee points
+    await supabaseAdmin
+      .from("profiles")
+      .update({ raw_points: newRefereePoints })
+      .eq("id", refereeProfileId);
+
+    // Log referee points in ledger
+    await supabaseAdmin.from("points_ledger").insert({
+      user_id: refereeProfileId,
+      amount: REFEREE_BONUS,
+      balance_after: newRefereePoints,
+      source: "referral_bonus",
+      source_id: referrerProfileId,
+      description: `Welcome bonus from referral`,
+    });
+  }
+
+  // Check referral tier upgrades for referrer
+  const newCount = (referrerProfile?.total_referrals || 0) + 1;
+  const { data: tiers } = await supabaseAdmin
+    .from("referral_tiers")
+    .select("*")
+    .lte("min_referrals", newCount)
+    .order("min_referrals", { ascending: false })
+    .limit(1);
+
+  if (tiers && tiers.length > 0) {
+    const tier = tiers[0];
+    // Check if tier bonus already awarded
+    const { data: existingLedger } = await supabaseAdmin
+      .from("points_ledger")
+      .select("id")
+      .eq("user_id", referrerProfileId)
+      .eq("source", "referral_tier")
+      .eq("source_id", tier.id)
+      .maybeSingle();
+
+    if (!existingLedger && tier.bonus_points > 0 && tier.min_referrals === newCount) {
+      // Award tier bonus
+      const { data: latestProfile } = await supabaseAdmin
+        .from("profiles")
+        .select("raw_points")
+        .eq("id", referrerProfileId)
+        .single();
+
+      if (latestProfile) {
+        const updatedPoints = (latestProfile.raw_points || 0) + tier.bonus_points;
+        await supabaseAdmin
+          .from("profiles")
+          .update({ raw_points: updatedPoints })
+          .eq("id", referrerProfileId);
+
+        await supabaseAdmin.from("points_ledger").insert({
+          user_id: referrerProfileId,
+          amount: tier.bonus_points,
+          balance_after: updatedPoints,
+          source: "referral_tier",
+          source_id: tier.id,
+          description: `Referral tier "${tier.name}" bonus`,
+        });
+      }
+    }
+
+    // Award tier badge if applicable
+    if (tier.badge_reward) {
+      const { data: existingBadge } = await supabaseAdmin
+        .from("user_badges")
+        .select("id")
+        .eq("user_id", referrerProfileId)
+        .eq("badge_id", tier.badge_reward)
+        .maybeSingle();
+
+      if (!existingBadge) {
+        await supabaseAdmin.from("user_badges").insert({
+          user_id: referrerProfileId,
+          badge_id: tier.badge_reward,
+        });
+      }
+    }
   }
 }
 
@@ -74,14 +218,12 @@ Deno.serve(async (req) => {
 
     const botToken = Deno.env.get("TELEGRAM_BOT_TOKEN");
     if (!botToken) {
-      console.error("TELEGRAM_BOT_TOKEN not configured");
       return new Response(
         JSON.stringify({ error: "Server configuration error" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Validate Telegram data
     const telegramUser = validateTelegramData(initData, botToken);
     if (!telegramUser) {
       return new Response(
@@ -90,13 +232,11 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Create Supabase admin client
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Check if user exists by telegram_id
     const { data: existingProfile } = await supabaseAdmin
       .from("profiles")
       .select("id, user_id")
@@ -109,11 +249,9 @@ Deno.serve(async (req) => {
     const password = `tg_${telegramUser.id}_${botToken.slice(-8)}`;
 
     if (existingProfile) {
-      // User exists, sign them in
       userId = existingProfile.user_id;
       profileId = existingProfile.id;
 
-      // Update profile with latest Telegram data
       await supabaseAdmin
         .from("profiles")
         .update({
@@ -125,25 +263,19 @@ Deno.serve(async (req) => {
         })
         .eq("id", profileId);
 
-      // Sign in the user
       const { data: signInData, error: signInError } = await supabaseAdmin.auth.signInWithPassword({
         email,
         password,
       });
 
       if (signInError) {
-        console.error("Sign in error:", signInError);
-        // If sign in fails, try to update the password
         await supabaseAdmin.auth.admin.updateUserById(userId, { password });
-        
-        // Try again
         const { data: retryData, error: retryError } = await supabaseAdmin.auth.signInWithPassword({
           email,
           password,
         });
 
         if (retryError) {
-          console.error("Retry sign in failed:", retryError);
           return new Response(
             JSON.stringify({ error: "Authentication failed" }),
             { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -192,7 +324,6 @@ Deno.serve(async (req) => {
       });
 
       if (signUpError || !authUser.user) {
-        console.error("Error creating user:", signUpError);
         return new Response(
           JSON.stringify({ error: "Failed to create user" }),
           { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -201,7 +332,6 @@ Deno.serve(async (req) => {
 
       userId = authUser.user.id;
 
-      // Check if profile already exists (might have been created by trigger)
       const { data: existingProfileForUser } = await supabaseAdmin
         .from("profiles")
         .select("id")
@@ -209,8 +339,7 @@ Deno.serve(async (req) => {
         .single();
 
       if (existingProfileForUser) {
-        // Update existing profile
-        const { data: updatedProfile, error: updateError } = await supabaseAdmin
+        const { data: updatedProfile } = await supabaseAdmin
           .from("profiles")
           .update({
             telegram_id: telegramUser.id,
@@ -223,12 +352,8 @@ Deno.serve(async (req) => {
           .select("id")
           .single();
 
-        if (updateError) {
-          console.error("Error updating profile:", updateError);
-        }
         profileId = existingProfileForUser.id;
       } else {
-        // Create new profile
         const { data: newProfile, error: profileError } = await supabaseAdmin
           .from("profiles")
           .insert({
@@ -243,7 +368,6 @@ Deno.serve(async (req) => {
           .single();
 
         if (profileError || !newProfile) {
-          console.error("Error creating profile:", profileError);
           return new Response(
             JSON.stringify({ error: "Failed to create profile" }),
             { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -252,13 +376,10 @@ Deno.serve(async (req) => {
 
         profileId = newProfile.id;
 
-        // Create initial leaderboard entry
-        await supabaseAdmin
-          .from("leaderboards")
-          .insert({ user_id: profileId });
+        await supabaseAdmin.from("leaderboards").insert({ user_id: profileId });
       }
 
-      // Handle referral if startParam is provided
+      // Handle referral with full point awarding
       if (startParam) {
         const { data: referrer } = await supabaseAdmin
           .from("profiles")
@@ -267,35 +388,7 @@ Deno.serve(async (req) => {
           .single();
 
         if (referrer && referrer.id !== profileId) {
-          // Update referred_by
-          await supabaseAdmin
-            .from("profiles")
-            .update({ referred_by: referrer.id })
-            .eq("id", profileId);
-
-          // Create referral entry
-          await supabaseAdmin
-            .from("referrals")
-            .insert({
-              referrer_id: referrer.id,
-              referee_id: profileId,
-              referrer_bonus: 100,
-              referee_bonus: 50,
-            });
-
-          // Update referrer's total_referrals
-          const { data: referrerProfile } = await supabaseAdmin
-            .from("profiles")
-            .select("total_referrals")
-            .eq("id", referrer.id)
-            .single();
-
-          if (referrerProfile) {
-            await supabaseAdmin
-              .from("profiles")
-              .update({ total_referrals: (referrerProfile.total_referrals || 0) + 1 })
-              .eq("id", referrer.id);
-          }
+          await processReferral(supabaseAdmin, referrer.id, profileId);
         }
       }
 
@@ -306,7 +399,6 @@ Deno.serve(async (req) => {
       });
 
       if (signInError) {
-        console.error("Sign in error for new user:", signInError);
         return new Response(
           JSON.stringify({ error: "Authentication failed" }),
           { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
