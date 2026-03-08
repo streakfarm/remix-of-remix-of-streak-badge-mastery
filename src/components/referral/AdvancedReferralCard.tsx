@@ -17,7 +17,9 @@ export function AdvancedReferralCard() {
   const { hapticFeedback, shareRef } = useTelegram();
 
   const refCode = profile?.ref_code || '';
-  const shareUrl = `${window.location.origin}?ref=${refCode}`;
+  const shareUrl = isTelegram 
+    ? `https://t.me/StreakFarmBot?start=${refCode}`
+    : `${window.location.origin}?ref=${refCode}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(shareUrl);
