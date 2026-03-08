@@ -11,6 +11,8 @@ import Leaderboard from '@/pages/Leaderboard';
 import Events from '@/pages/Events';
 import Admin from '@/pages/Admin';
 import Auth from '@/pages/Auth';
+import ForgotPassword from '@/pages/ForgotPassword';
+import ResetPassword from '@/pages/ResetPassword';
 import NotFound from '@/pages/NotFound';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
