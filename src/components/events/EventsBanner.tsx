@@ -27,12 +27,13 @@ export function EventsBanner() {
           onJoin={() => {
             hapticFeedback('medium');
             joinEvent.mutate(event.id, {
-              onSuccess: () => {
+              onSuccess: (data) => {
                 hapticFeedback('success');
-                toast.success(`🎉 Joined "${event.name}"!`);
+                const pts = data.points_awarded || 0;
+                toast.success(`🎉 Joined "${event.name}"!${pts > 0 ? ` +${pts} points!` : ''}`);
               },
-              onError: () => {
-                toast.error('Failed to join event');
+              onError: (err: any) => {
+                toast.error(err.message || 'Failed to join event');
               },
             });
           }}
