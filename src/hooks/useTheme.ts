@@ -488,13 +488,15 @@ export function useTheme() {
   const { data: activeThemeId = 'default' } = useQuery({
     queryKey: ['app-theme'],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('admin_config')
         .select('value')
         .eq('id', 'app_theme')
-        .single();
+        .maybeSingle();
 
-      if (data?.value && typeof data.value === 'object' && !Array.isArray(data.value)) {
+      if (error || !data) return 'default';
+
+      if (data.value && typeof data.value === 'object' && !Array.isArray(data.value)) {
         return (data.value as Record<string, unknown>).theme_id as string || 'default';
       }
       return 'default';
