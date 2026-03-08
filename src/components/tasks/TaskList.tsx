@@ -58,6 +58,12 @@ function TaskCard({ task, status, onComplete, isLoading }: TaskCardProps) {
       return;
     }
 
+    // Open action URL if present
+    const actionUrl = (task as any).action_url;
+    if (actionUrl) {
+      window.open(actionUrl, '_blank');
+    }
+
     hapticFeedback('medium');
     onComplete();
   };

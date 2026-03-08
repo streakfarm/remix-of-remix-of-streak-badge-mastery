@@ -351,6 +351,12 @@ export function AdminTasksPanel() {
                         Wallet
                       </span>
                     )}
+                    {(task as any).action_url && (
+                      <a href={(task as any).action_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-primary hover:underline">
+                        <ExternalLink className="w-3 h-3" />
+                        Link
+                      </a>
+                    )}
                   </div>
                 </div>
                 <div className="flex gap-1">
