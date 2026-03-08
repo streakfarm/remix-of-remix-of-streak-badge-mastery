@@ -44,6 +44,9 @@ const Index = () => {
         {/* Badge showcase */}
         <BadgeShowcase />
 
+        {/* Ad Banner */}
+        <AdBanner placement="banner" dismissible />
+
         {/* Quick stats */}
         <motion.div 
           className="grid grid-cols-3 gap-3"

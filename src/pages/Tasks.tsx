@@ -53,6 +53,9 @@ export default function Tasks() {
         {/* Ad Watch Card */}
         <AdWatchCard />
 
+        {/* Native Ad */}
+        <AdBanner placement="native" compact />
+
         {/* Task Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-4">
