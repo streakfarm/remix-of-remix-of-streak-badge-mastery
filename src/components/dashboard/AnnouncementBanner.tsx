@@ -1,12 +1,7 @@
-import { useState } from 'react';
-import { Megaphone, X, Sparkles, Rocket } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '@/lib/utils';
+import { Megaphone, Sparkles, Rocket } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export function AnnouncementBanner() {
-  const [dismissed, setDismissed] = useState(false);
-
-  if (dismissed) return null;
 
   return (
     <AnimatePresence>
