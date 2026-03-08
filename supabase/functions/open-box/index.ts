@@ -130,7 +130,7 @@ Deno.serve(async (req) => {
         final_points: finalPoints,
       })
       .eq("id", boxId)
-      .eq("opened_at", null); // Extra safety check
+      .is("opened_at", null); // Extra safety check
 
     if (updateBoxError) {
       console.error("Error updating box:", updateBoxError);
