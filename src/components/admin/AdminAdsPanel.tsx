@@ -53,6 +53,7 @@ const defaultAd = {
   description: '',
   image_url: '',
   redirect_url: '',
+  ad_code: '',
   placement: 'banner',
   is_active: true,
   priority: 0,
