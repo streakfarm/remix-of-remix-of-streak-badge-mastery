@@ -5,6 +5,7 @@ import { TaskList } from '@/components/tasks/TaskList';
 import { AdWatchCard } from '@/components/tasks/AdWatchCard';
 import { WalletBanner } from '@/components/gamification/WalletBanner';
 import { FireTrail } from '@/components/gamification/FireTrail';
+import { AdBanner } from '@/components/ads/AdBanner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { useTasks } from '@/hooks/useTasks';
@@ -51,6 +52,9 @@ export default function Tasks() {
 
         {/* Ad Watch Card */}
         <AdWatchCard />
+
+        {/* Native Ad */}
+        <AdBanner placement="native" compact />
 
         {/* Task Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

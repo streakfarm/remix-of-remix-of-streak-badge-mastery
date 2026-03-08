@@ -40,7 +40,12 @@ interface Ad {
   created_at: string | null;
 }
 
-const PLACEMENTS = ['banner', 'interstitial', 'native', 'reward'] as const;
+const PLACEMENTS = [
+  { value: 'banner', label: 'Banner', desc: 'Dashboard & page banners' },
+  { value: 'native', label: 'Native', desc: 'Compact inline ads in task lists' },
+  { value: 'reward', label: 'Reward', desc: 'Shown in Watch Ad modal for points' },
+  { value: 'interstitial', label: 'Interstitial', desc: 'Full screen popup ads' },
+] as const;
 
 const defaultAd = {
   title: '',
@@ -249,7 +254,10 @@ export function AdminAdsPanel() {
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {PLACEMENTS.map(p => (
-                        <SelectItem key={p} value={p} className="capitalize">{p}</SelectItem>
+                        <SelectItem key={p.value} value={p.value}>
+                          <span className="capitalize">{p.label}</span>
+                          <span className="text-xs text-muted-foreground ml-1">— {p.desc}</span>
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
