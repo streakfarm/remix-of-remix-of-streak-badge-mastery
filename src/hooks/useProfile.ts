@@ -21,6 +21,7 @@ export interface Profile {
   wallet_type: string | null;
   ref_code: string;
   multiplier_permanent: number;
+  referred_by: string | null;
   created_at: string;
 }
 
