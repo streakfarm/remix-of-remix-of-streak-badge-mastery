@@ -12,7 +12,8 @@ import {
   Package,
   LayoutDashboard,
   Users,
-  Calendar
+  Calendar,
+  Megaphone
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAdmin } from '@/hooks/useAdmin';
@@ -26,6 +27,7 @@ import { AdminEventsPanel } from '@/components/admin/AdminEventsPanel';
 import { AdminConfigPanel } from '@/components/admin/AdminConfigPanel';
 import { AdminNotificationsPanel } from '@/components/admin/AdminNotificationsPanel';
 import { AdminBoxPanel } from '@/components/admin/AdminBoxPanel';
+import { AdminAdsPanel } from '@/components/admin/AdminAdsPanel';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 export default function Admin() {
@@ -75,6 +77,7 @@ export default function Admin() {
     { id: 'badges', label: 'Badges', icon: Award },
     { id: 'events', label: 'Events', icon: Calendar },
     { id: 'boxes', label: 'Boxes', icon: Package },
+    { id: 'ads', label: 'Ads', icon: Megaphone },
     { id: 'notifications', label: 'Notify', icon: Bell },
     { id: 'config', label: 'Config', icon: Settings },
   ];
@@ -138,6 +141,7 @@ export default function Admin() {
                   {tab.id === 'badges' && <AdminBadgesPanel />}
                   {tab.id === 'events' && <AdminEventsPanel />}
                   {tab.id === 'boxes' && <AdminBoxPanel />}
+                  {tab.id === 'ads' && <AdminAdsPanel />}
                   {tab.id === 'notifications' && <AdminNotificationsPanel />}
                   {tab.id === 'config' && <AdminConfigPanel />}
                 </motion.div>

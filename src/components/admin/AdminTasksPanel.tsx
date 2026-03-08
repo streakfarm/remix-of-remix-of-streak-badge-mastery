@@ -9,7 +9,8 @@ import {
   XCircle,
   Clock,
   Repeat,
-  Wallet
+  Wallet,
+  ExternalLink
 } from 'lucide-react';
 import { useAdmin, Task } from '@/hooks/useAdmin';
 import { Button } from '@/components/ui/button';
@@ -277,6 +278,16 @@ export function AdminTasksPanel() {
                 </div>
               </div>
 
+              <div>
+                <Label>Action URL (redirect link)</Label>
+                <Input 
+                  value={(taskForm as any).action_url || ''}
+                  onChange={(e) => setTaskForm(prev => ({ ...prev, action_url: e.target.value || null } as any))}
+                  placeholder="https://example.com/follow"
+                />
+                <p className="text-xs text-muted-foreground mt-1">User will be redirected here when completing task</p>
+              </div>
+
               <div className="flex gap-2 justify-end">
                 <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                   Cancel
@@ -339,6 +350,12 @@ export function AdminTasksPanel() {
                         <Wallet className="w-3 h-3" />
                         Wallet
                       </span>
+                    )}
+                    {(task as any).action_url && (
+                      <a href={(task as any).action_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-primary hover:underline">
+                        <ExternalLink className="w-3 h-3" />
+                        Link
+                      </a>
                     )}
                   </div>
                 </div>
