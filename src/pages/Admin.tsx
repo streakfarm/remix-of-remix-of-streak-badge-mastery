@@ -12,7 +12,8 @@ import {
   Package,
   LayoutDashboard,
   Users,
-  Calendar
+  Calendar,
+  Megaphone
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAdmin } from '@/hooks/useAdmin';
