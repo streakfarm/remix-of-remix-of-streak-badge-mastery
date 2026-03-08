@@ -41,15 +41,19 @@ export function useAds(placement?: string) {
 
   const trackImpression = useMutation({
     mutationFn: async (adId: string) => {
-      await supabase.rpc('increment_ad_impressions' as any, { ad_id: adId }).catch(() => {
-        // Fallback: direct update (works for admins or if RPC doesn't exist)
-      });
+      const ad = ads.find(a => a.id === adId);
+      if (ad) {
+        await supabase.from('ads').update({ impressions: ad.impressions + 1 }).eq('id', adId);
+      }
     },
   });
 
   const trackClick = useMutation({
     mutationFn: async (adId: string) => {
-      await supabase.rpc('increment_ad_clicks' as any, { ad_id: adId }).catch(() => {});
+      const ad = ads.find(a => a.id === adId);
+      if (ad) {
+        await supabase.from('ads').update({ clicks: ad.clicks + 1 }).eq('id', adId);
+      }
     },
   });
 
