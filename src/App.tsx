@@ -8,11 +8,13 @@ import { TonWalletProvider } from "@/hooks/useTonWallet";
 import { MultiWalletProvider } from "@/hooks/useMultiWallet";
 import { SplashScreen } from "@/components/SplashScreen";
 import { AnimatedRoutes } from "@/components/layout/AnimatedRoutes";
+import { useTheme } from "@/hooks/useTheme";
 
 const queryClient = new QueryClient();
 
 function AppContent() {
   const { isLoading, isAuthenticated, authError, retryAuth } = useAuth();
+  useTheme(); // Apply active theme globally
 
   console.log("AppContent state:", { isLoading, isAuthenticated, authError });
 

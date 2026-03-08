@@ -15,6 +15,7 @@ import {
   Calendar,
   Megaphone
 } from 'lucide-react';
+import { Paintbrush } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAdmin } from '@/hooks/useAdmin';
 import { Button } from '@/components/ui/button';
@@ -28,6 +29,7 @@ import { AdminConfigPanel } from '@/components/admin/AdminConfigPanel';
 import { AdminNotificationsPanel } from '@/components/admin/AdminNotificationsPanel';
 import { AdminBoxPanel } from '@/components/admin/AdminBoxPanel';
 import { AdminAdsPanel } from '@/components/admin/AdminAdsPanel';
+import { AdminThemePanel } from '@/components/admin/AdminThemePanel';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 export default function Admin() {
@@ -78,7 +80,9 @@ export default function Admin() {
     { id: 'events', label: 'Events', icon: Calendar },
     { id: 'boxes', label: 'Boxes', icon: Package },
     { id: 'ads', label: 'Ads', icon: Megaphone },
+    { id: 'themes', label: 'Themes', icon: Paintbrush },
     { id: 'notifications', label: 'Notify', icon: Bell },
+    { id: 'config', label: 'Config', icon: Settings },
     { id: 'config', label: 'Config', icon: Settings },
   ];
 
@@ -142,6 +146,7 @@ export default function Admin() {
                   {tab.id === 'events' && <AdminEventsPanel />}
                   {tab.id === 'boxes' && <AdminBoxPanel />}
                   {tab.id === 'ads' && <AdminAdsPanel />}
+                  {tab.id === 'themes' && <AdminThemePanel />}
                   {tab.id === 'notifications' && <AdminNotificationsPanel />}
                   {tab.id === 'config' && <AdminConfigPanel />}
                 </motion.div>
