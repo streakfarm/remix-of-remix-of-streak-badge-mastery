@@ -38,19 +38,36 @@ export function useEvents() {
 
   const joinEvent = useMutation({
     mutationFn: async (eventId: string) => {
-      if (!profile?.id) throw new Error('No profile');
-      const { data, error } = await supabase
-        .from('event_participations')
-        .insert({ event_id: eventId, user_id: profile.id })
-        .select()
-        .single();
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData?.session?.access_token;
+      if (!accessToken) throw new Error('Not authenticated');
 
-      if (error) throw error;
-      return data;
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/join-event`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ eventId }),
+        }
+      );
+
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Failed to join event');
+      return result;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      queryClient.setQueriesData({ queryKey: ['profile'] }, (old: any) => {
+        if (old && data?.new_balance !== undefined) {
+          return { ...old, raw_points: data.new_balance };
+        }
+        return old;
+      });
       queryClient.invalidateQueries({ queryKey: ['event-participations'] });
       queryClient.invalidateQueries({ queryKey: ['seasonal-events'] });
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
     },
   });
 
