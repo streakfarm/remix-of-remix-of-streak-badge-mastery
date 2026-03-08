@@ -38,6 +38,57 @@ export type Database = {
         }
         Relationships: []
       }
+      ads: {
+        Row: {
+          clicks: number | null
+          created_at: string | null
+          description: string | null
+          end_date: string | null
+          id: string
+          image_url: string | null
+          impressions: number | null
+          is_active: boolean | null
+          placement: string
+          priority: number | null
+          redirect_url: string
+          start_date: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          clicks?: number | null
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          image_url?: string | null
+          impressions?: number | null
+          is_active?: boolean | null
+          placement?: string
+          priority?: number | null
+          redirect_url: string
+          start_date?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          clicks?: number | null
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          image_url?: string | null
+          impressions?: number | null
+          is_active?: boolean | null
+          placement?: string
+          priority?: number | null
+          redirect_url?: string
+          start_date?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       badges: {
         Row: {
           available_from: string | null
@@ -685,6 +736,7 @@ export type Database = {
       }
       tasks: {
         Row: {
+          action_url: string | null
           available_from: string | null
           available_until: string | null
           created_at: string | null
@@ -704,6 +756,7 @@ export type Database = {
           verification_type: string | null
         }
         Insert: {
+          action_url?: string | null
           available_from?: string | null
           available_until?: string | null
           created_at?: string | null
@@ -723,6 +776,7 @@ export type Database = {
           verification_type?: string | null
         }
         Update: {
+          action_url?: string | null
           available_from?: string | null
           available_until?: string | null
           created_at?: string | null
