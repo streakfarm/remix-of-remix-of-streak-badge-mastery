@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAds, Ad } from '@/hooks/useAds';
+import { AdUnitRenderer } from './AdUnitRenderer';
 import { X, ExternalLink, Play, Coins } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -9,7 +10,7 @@ interface RewardAdModalProps {
   onClose: () => void;
   onComplete: () => void;
   pointsReward: number;
-  watchDuration?: number; // seconds
+  watchDuration?: number;
 }
 
 export function RewardAdModal({ 
@@ -57,7 +58,6 @@ export function RewardAdModal({
       }
     }, interval);
 
-    // Allow skip after 3 seconds
     const skipTimer = setTimeout(() => setCanSkip(true), 3000);
 
     return () => {
@@ -71,7 +71,9 @@ export function RewardAdModal({
   const handleAdClick = () => {
     if (currentAd) {
       trackClick.mutate(currentAd.id);
-      window.open(currentAd.redirect_url, '_blank');
+      if (currentAd.redirect_url) {
+        window.open(currentAd.redirect_url, '_blank');
+      }
     }
   };
 
@@ -126,7 +128,7 @@ export function RewardAdModal({
             </div>
           )}
 
-          {/* Ad Content */}
+          {/* Content */}
           <div className="p-4">
             {!isWatching ? (
               <div className="text-center py-6 space-y-4">
@@ -164,40 +166,45 @@ export function RewardAdModal({
                   Claim Points
                 </Button>
               </div>
-            ) : currentAd ? (
-              <div 
-                className="cursor-pointer group"
-                onClick={handleAdClick}
-              >
-                {currentAd.image_url && (
-                  <div className="w-full aspect-video rounded-xl overflow-hidden mb-3">
-                    <img 
-                      src={currentAd.image_url} 
-                      alt={currentAd.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                    />
+            ) : (
+              /* Watching state — show actual ad content */
+              <div className="space-y-3">
+                {currentAd?.ad_code ? (
+                  /* Render actual ad unit code */
+                  <div className="rounded-xl overflow-hidden bg-muted/30 min-h-[200px]">
+                    <AdUnitRenderer adCode={currentAd.ad_code} className="min-h-[200px]" />
+                  </div>
+                ) : currentAd ? (
+                  /* Fallback: image/link based ad */
+                  <div className="cursor-pointer group" onClick={handleAdClick}>
+                    {currentAd.image_url && (
+                      <div className="w-full aspect-video rounded-xl overflow-hidden mb-3">
+                        <img 
+                          src={currentAd.image_url} 
+                          alt={currentAd.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-semibold">{currentAd.title}</p>
+                        {currentAd.description && (
+                          <p className="text-sm text-muted-foreground line-clamp-2">{currentAd.description}</p>
+                        )}
+                      </div>
+                      <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0" />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3 animate-pulse">
+                      <Play className="w-8 h-8 text-primary" />
+                    </div>
+                    <p className="text-sm text-muted-foreground">Loading ad...</p>
                   </div>
                 )}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-semibold">{currentAd.title}</p>
-                    {currentAd.description && (
-                      <p className="text-sm text-muted-foreground line-clamp-2">{currentAd.description}</p>
-                    )}
-                  </div>
-                  <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0" />
-                </div>
-                <p className="text-xs text-muted-foreground text-center mt-3">
-                  {Math.ceil((100 - progress) / 100 * watchDuration)}s remaining...
-                </p>
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3 animate-pulse">
-                  <Play className="w-8 h-8 text-primary" />
-                </div>
-                <p className="text-sm text-muted-foreground">Loading ad...</p>
-                <p className="text-xs text-muted-foreground mt-3">
+                <p className="text-xs text-muted-foreground text-center">
                   {Math.ceil((100 - progress) / 100 * watchDuration)}s remaining...
                 </p>
               </div>

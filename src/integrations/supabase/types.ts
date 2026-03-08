@@ -40,6 +40,7 @@ export type Database = {
       }
       ads: {
         Row: {
+          ad_code: string | null
           clicks: number | null
           created_at: string | null
           description: string | null
@@ -56,6 +57,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          ad_code?: string | null
           clicks?: number | null
           created_at?: string | null
           description?: string | null
@@ -72,6 +74,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          ad_code?: string | null
           clicks?: number | null
           created_at?: string | null
           description?: string | null
