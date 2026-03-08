@@ -15,6 +15,7 @@ import {
   Calendar,
   Megaphone
 } from 'lucide-react';
+import { Paintbrush } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAdmin } from '@/hooks/useAdmin';
 import { Button } from '@/components/ui/button';
