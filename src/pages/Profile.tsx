@@ -3,9 +3,11 @@ import { useProfile } from '@/hooks/useProfile';
 import { useTelegram } from '@/hooks/useTelegram';
 import { useBadges } from '@/hooks/useBadges';
 import { useAdmin } from '@/hooks/useAdmin';
+import { useAuth } from '@/providers/AuthProvider';
 import { ReferralCard } from '@/components/referral/ReferralCard';
-import { WalletConnectCard } from '@/components/wallet/WalletConnectCard';
+import { MultiWalletCard } from '@/components/wallet/MultiWalletCard';
 import { useTonWalletContext } from '@/hooks/useTonWallet';
+import { useMultiWallet } from '@/hooks/useMultiWallet';
 import { 
   Calendar, Trophy, Package, ListTodo, Wallet, 
   Sparkles, Shield, Zap, LogOut, User
@@ -16,19 +18,18 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion } from 'framer-motion';
-import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 export default function Profile() {
-  const { profile, leaderboardEntry, totalMultiplier, isAuthenticated } = useProfile();
-  const { user, isTelegram } = useTelegram();
+  const { profile, leaderboardEntry, totalMultiplier, isAuthenticated, isLoading } = useProfile();
+  const { user } = useTelegram();
+  const { signOut } = useAuth();
   const { badgeCount, userBadges, badgesByCategory } = useBadges();
-  const { isConnected, walletAddress } = useTonWalletContext();
+  const { isConnected: tonConnected } = useTonWalletContext();
+  const { connectedWallets } = useMultiWallet();
   const { isAdmin } = useAdmin();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('en-US', {
@@ -39,14 +40,13 @@ export default function Profile() {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    queryClient.invalidateQueries();
+    await signOut();
     toast.success('Logged out successfully');
   };
 
-  // Get wallet badges status
   const walletBadges = badgesByCategory.wallet || [];
   const ownedWalletBadgeIds = new Set(userBadges.filter(ub => ub.badge?.badge_category === 'wallet').map(ub => ub.badge_id));
+  const totalWalletsConnected = (tonConnected ? 1 : 0) + connectedWallets.filter(w => w.type !== 'ton').length;
 
   const stats = [
     { 
@@ -71,9 +71,6 @@ export default function Profile() {
     },
   ];
 
-  // Show loading state while checking auth
-  const { isLoading } = useProfile();
-  
   if (isLoading) {
     return (
       <AppLayout>
@@ -87,7 +84,6 @@ export default function Profile() {
     );
   }
 
-  // If not authenticated, show message
   if (!isAuthenticated) {
     return (
       <AppLayout>
@@ -98,13 +94,16 @@ export default function Profile() {
             </div>
             <h2 className="text-xl font-bold mb-2">Not Logged In</h2>
             <p className="text-muted-foreground text-sm">
-              Please open StreakFarm from Telegram to access your profile.
+              Please sign in to access your profile.
             </p>
           </Card>
         </div>
       </AppLayout>
     );
   }
+
+  const displayName = profile?.first_name || user?.first_name || 'Farmer';
+  const displayUsername = profile?.username || user?.username || profile?.ref_code || 'anonymous';
 
   return (
     <AppLayout>
@@ -115,17 +114,13 @@ export default function Profile() {
             <Avatar className="w-20 h-20 border-2 border-primary/30">
               <AvatarImage src={user?.photo_url} />
               <AvatarFallback className="text-3xl bg-primary/20">
-                {(profile?.first_name?.[0] || user?.first_name?.[0] || '🌾').toUpperCase()}
+                {displayName[0]?.toUpperCase() || '🌾'}
               </AvatarFallback>
             </Avatar>
             
             <div className="flex-1">
-              <h1 className="text-xl font-bold">
-                {profile?.first_name || user?.first_name || 'Farmer'}
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                @{profile?.username || user?.username || 'anonymous'}
-              </p>
+              <h1 className="text-xl font-bold">{displayName}</h1>
+              <p className="text-sm text-muted-foreground">@{displayUsername}</p>
               {profile?.created_at && (
                 <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
                   <Calendar className="w-3 h-3" />
@@ -138,21 +133,20 @@ export default function Profile() {
                   <Sparkles className="w-4 h-4" />
                   {totalMultiplier.toFixed(1)}× Multiplier
                 </div>
-                {isConnected && (
+                {totalWalletsConnected > 0 && (
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="flex items-center gap-1 px-2 py-1 rounded-full bg-green-500/20 text-green-500 text-xs font-medium"
+                    className="flex items-center gap-1 px-2 py-1 rounded-full bg-success/20 text-success text-xs font-medium"
                   >
-                    <Shield className="w-3 h-3" />
-                    Wallet Connected
+                    <Wallet className="w-3 h-3" />
+                    {totalWalletsConnected} Wallet{totalWalletsConnected > 1 ? 's' : ''}
                   </motion.div>
                 )}
               </div>
             </div>
           </div>
           
-          {/* Admin & Logout buttons */}
           <div className="flex gap-2 mt-4">
             {isAdmin && (
               <Button 
@@ -197,24 +191,23 @@ export default function Profile() {
           ))}
         </div>
 
-        {/* Tabs for different sections */}
+        {/* Tabs */}
         <Tabs defaultValue="wallet" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="wallet">Wallet</TabsTrigger>
+            <TabsTrigger value="wallet">Wallets</TabsTrigger>
             <TabsTrigger value="referral">Referrals</TabsTrigger>
             <TabsTrigger value="multiplier">Multiplier</TabsTrigger>
           </TabsList>
 
           <TabsContent value="wallet" className="mt-4 space-y-4">
-            {/* Wallet Connect Card */}
-            <WalletConnectCard />
+            <MultiWalletCard />
             
-            {/* Wallet Badges Section */}
+            {/* Wallet Badges */}
             <Card className="p-4 space-y-4">
               <h3 className="font-semibold flex items-center gap-2">
                 <Zap className="w-5 h-5 text-yellow-500" />
                 Wallet Badges
-                {!isConnected && (
+                {totalWalletsConnected === 0 && (
                   <span className="text-xs text-muted-foreground ml-auto">
                     Connect wallet to unlock
                   </span>
@@ -224,7 +217,7 @@ export default function Profile() {
               <div className="grid grid-cols-2 gap-3">
                 {walletBadges.map((badge) => {
                   const isOwned = ownedWalletBadgeIds.has(badge.id);
-                  const isLocked = !isConnected && !isOwned;
+                  const isLocked = totalWalletsConnected === 0 && !isOwned;
                   
                   return (
                     <motion.div
@@ -280,7 +273,7 @@ export default function Profile() {
                         <motion.div 
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
-                          className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center"
+                          className="absolute -top-1 -right-1 w-5 h-5 bg-success rounded-full flex items-center justify-center"
                         >
                           <span className="text-[10px]">✓</span>
                         </motion.div>
@@ -332,7 +325,7 @@ export default function Profile() {
                     +{(profile?.streak_current || 0) >= 7 ? '0.1' : '0.0'}×
                   </span>
                 </div>
-                {isConnected && (
+                {totalWalletsConnected > 0 && (
                   <motion.div 
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
@@ -340,10 +333,10 @@ export default function Profile() {
                   >
                     <div className="flex items-center gap-2">
                       <span className="text-lg">👛</span>
-                      <span className="text-muted-foreground">Wallet Connected</span>
+                      <span className="text-muted-foreground">Wallets ({totalWalletsConnected})</span>
                     </div>
-                    <span className="font-medium text-green-500">
-                      +0.1×
+                    <span className="font-medium text-success">
+                      +{(totalWalletsConnected * 0.05).toFixed(2)}×
                     </span>
                   </motion.div>
                 )}
