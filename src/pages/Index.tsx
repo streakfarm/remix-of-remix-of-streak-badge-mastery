@@ -5,6 +5,7 @@ import { StreakDisplay } from '@/components/dashboard/StreakDisplay';
 import { BoxPreview } from '@/components/dashboard/BoxPreview';
 import { BadgeShowcase } from '@/components/dashboard/BadgeShowcase';
 import { WalletBanner } from '@/components/gamification/WalletBanner';
+import { AnnouncementBanner } from '@/components/dashboard/AnnouncementBanner';
 import { EventsBanner } from '@/components/events/EventsBanner';
 import { useProfile } from '@/hooks/useProfile';
 import { motion } from 'framer-motion';
@@ -25,6 +26,9 @@ const Index = () => {
   return (
     <AppLayout>
       <div className="px-4 py-4 space-y-4 max-w-lg mx-auto pb-24">
+        {/* Announcement */}
+        <AnnouncementBanner />
+
         {/* Wallet Banner */}
         <WalletBanner />
 
