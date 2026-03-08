@@ -9,22 +9,29 @@ import {
   Loader2,
   AlertTriangle,
   Bell,
-  Package
+  Package,
+  LayoutDashboard,
+  Users,
+  Calendar
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAdmin } from '@/hooks/useAdmin';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AdminDashboardPanel } from '@/components/admin/AdminDashboardPanel';
+import { AdminUsersPanel } from '@/components/admin/AdminUsersPanel';
 import { AdminTasksPanel } from '@/components/admin/AdminTasksPanel';
 import { AdminBadgesPanel } from '@/components/admin/AdminBadgesPanel';
+import { AdminEventsPanel } from '@/components/admin/AdminEventsPanel';
 import { AdminConfigPanel } from '@/components/admin/AdminConfigPanel';
 import { AdminNotificationsPanel } from '@/components/admin/AdminNotificationsPanel';
 import { AdminBoxPanel } from '@/components/admin/AdminBoxPanel';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 export default function Admin() {
   const navigate = useNavigate();
   const { isAdmin, isCheckingAdmin } = useAdmin();
-  const [activeTab, setActiveTab] = useState('tasks');
+  const [activeTab, setActiveTab] = useState('dashboard');
 
   if (isCheckingAdmin) {
     return (
@@ -61,6 +68,17 @@ export default function Admin() {
     );
   }
 
+  const tabs = [
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'users', label: 'Users', icon: Users },
+    { id: 'tasks', label: 'Tasks', icon: ListTodo },
+    { id: 'badges', label: 'Badges', icon: Award },
+    { id: 'events', label: 'Events', icon: Calendar },
+    { id: 'boxes', label: 'Boxes', icon: Package },
+    { id: 'notifications', label: 'Notify', icon: Bell },
+    { id: 'config', label: 'Config', icon: Settings },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -90,79 +108,41 @@ export default function Admin() {
       {/* Content */}
       <main className="p-4 pb-24">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="w-full grid grid-cols-5 mb-6 bg-muted/50">
-            <TabsTrigger value="tasks" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <ListTodo className="w-4 h-4" />
-              <span className="hidden sm:inline">Tasks</span>
-            </TabsTrigger>
-            <TabsTrigger value="badges" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <Award className="w-4 h-4" />
-              <span className="hidden sm:inline">Badges</span>
-            </TabsTrigger>
-            <TabsTrigger value="boxes" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <Package className="w-4 h-4" />
-              <span className="hidden sm:inline">Boxes</span>
-            </TabsTrigger>
-            <TabsTrigger value="notifications" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <Bell className="w-4 h-4" />
-              <span className="hidden sm:inline">Notify</span>
-            </TabsTrigger>
-            <TabsTrigger value="config" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <Settings className="w-4 h-4" />
-              <span className="hidden sm:inline">Config</span>
-            </TabsTrigger>
-          </TabsList>
+          <ScrollArea className="w-full mb-6">
+            <TabsList className="inline-flex w-max bg-muted/50 p-1">
+              {tabs.map(tab => (
+                <TabsTrigger 
+                  key={tab.id} 
+                  value={tab.id} 
+                  className="gap-1.5 px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  <tab.icon className="w-4 h-4" />
+                  <span className="text-xs">{tab.label}</span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
 
-          <AnimatePresence mode="wait">
-            <TabsContent value="tasks" className="mt-0">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-              >
-                <AdminTasksPanel />
-              </motion.div>
-            </TabsContent>
-
-            <TabsContent value="badges" className="mt-0">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-              >
-                <AdminBadgesPanel />
-              </motion.div>
-            </TabsContent>
-
-            <TabsContent value="boxes" className="mt-0">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-              >
-                <AdminBoxPanel />
-              </motion.div>
-            </TabsContent>
-
-            <TabsContent value="notifications" className="mt-0">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-              >
-                <AdminNotificationsPanel />
-              </motion.div>
-            </TabsContent>
-
-            <TabsContent value="config" className="mt-0">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-              >
-                <AdminConfigPanel />
-              </motion.div>
-            </TabsContent>
+          <AnimatePresence mode="popLayout">
+            {tabs.map(tab => (
+              <TabsContent key={tab.id} value={tab.id} className="mt-0">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                >
+                  {tab.id === 'dashboard' && <AdminDashboardPanel />}
+                  {tab.id === 'users' && <AdminUsersPanel />}
+                  {tab.id === 'tasks' && <AdminTasksPanel />}
+                  {tab.id === 'badges' && <AdminBadgesPanel />}
+                  {tab.id === 'events' && <AdminEventsPanel />}
+                  {tab.id === 'boxes' && <AdminBoxPanel />}
+                  {tab.id === 'notifications' && <AdminNotificationsPanel />}
+                  {tab.id === 'config' && <AdminConfigPanel />}
+                </motion.div>
+              </TabsContent>
+            ))}
           </AnimatePresence>
         </Tabs>
       </main>
