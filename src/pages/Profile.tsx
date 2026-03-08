@@ -4,7 +4,7 @@ import { useTelegram } from '@/hooks/useTelegram';
 import { useBadges } from '@/hooks/useBadges';
 import { useAdmin } from '@/hooks/useAdmin';
 import { useAuth } from '@/providers/AuthProvider';
-import { ReferralCard } from '@/components/referral/ReferralCard';
+import { AdvancedReferralCard } from '@/components/referral/AdvancedReferralCard';
 import { MultiWalletCard } from '@/components/wallet/MultiWalletCard';
 import { useTonWalletContext } from '@/hooks/useTonWallet';
 import { useMultiWallet } from '@/hooks/useMultiWallet';
