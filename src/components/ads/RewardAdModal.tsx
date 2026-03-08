@@ -58,11 +58,8 @@ export function RewardAdModal({
       }
     }, interval);
 
-    const skipTimer = setTimeout(() => setCanSkip(true), 3000);
-
     return () => {
       clearInterval(timer);
-      clearTimeout(skipTimer);
     };
   }, [isWatching, completed, watchDuration]);
 
