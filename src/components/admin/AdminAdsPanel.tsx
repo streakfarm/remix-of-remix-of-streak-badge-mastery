@@ -241,8 +241,25 @@ export function AdminAdsPanel() {
                   placeholder="https://example.com/image.jpg"
                 />
               </div>
+
+              {/* Ad Unit Code */}
+              <div className="border border-dashed border-primary/30 rounded-xl p-4 bg-primary/5">
+                <Label className="flex items-center gap-2 mb-2">
+                  <span className="text-base">📦 Ad Unit Code (HTML/Script)</span>
+                </Label>
+                <Textarea
+                  value={adForm.ad_code}
+                  onChange={(e) => setAdForm(prev => ({ ...prev, ad_code: e.target.value }))}
+                  placeholder={'<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>\n<ins class="adsbygoogle" data-ad-client="ca-pub-xxx" data-ad-slot="xxx"></ins>\n<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>'}
+                  className="font-mono text-xs min-h-[120px]"
+                />
+                <p className="text-xs text-muted-foreground mt-2">
+                  Kisi bhi ad network ka embed code yahan paste karo (Google AdSense, A-Ads, PropellerAds, etc.). Ye code directly render hoga.
+                </p>
+              </div>
+
               <div>
-                <Label>Redirect URL *</Label>
+                <Label>Redirect URL (optional if ad code used)</Label>
                 <Input
                   value={adForm.redirect_url}
                   onChange={(e) => setAdForm(prev => ({ ...prev, redirect_url: e.target.value }))}
