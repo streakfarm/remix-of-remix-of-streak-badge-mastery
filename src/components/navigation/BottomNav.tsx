@@ -9,7 +9,7 @@ import { useState } from 'react';
 const navItems = [
   { path: '/', icon: Home, label: 'Home' },
   { path: '/tasks', icon: CheckSquare, label: 'Tasks' },
-  { path: '/badges', icon: Trophy, label: 'Badges' },
+  { path: '/events', icon: Calendar, label: 'Events' },
   { path: '/leaderboard', icon: Users, label: 'Ranks' },
   { path: '/profile', icon: User, label: 'Profile' },
 ];
