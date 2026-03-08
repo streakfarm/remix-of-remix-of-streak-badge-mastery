@@ -21,6 +21,7 @@ export interface Profile {
   wallet_type: string | null;
   ref_code: string;
   multiplier_permanent: number;
+  referred_by: string | null;
   created_at: string;
 }
 
@@ -55,7 +56,7 @@ export function useProfile() {
       
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, user_id, telegram_id, username, first_name, avatar_url, raw_points, streak_current, streak_best, last_checkin, total_boxes_opened, total_tasks_completed, total_referrals, wallet_address, wallet_type, ref_code, multiplier_permanent, created_at, is_banned, wallet_connected_at')
+        .select('id, user_id, telegram_id, username, first_name, avatar_url, raw_points, streak_current, streak_best, last_checkin, total_boxes_opened, total_tasks_completed, total_referrals, wallet_address, wallet_type, ref_code, multiplier_permanent, referred_by, created_at, is_banned, wallet_connected_at')
         .eq('user_id', session.user.id)
         .maybeSingle();
       
