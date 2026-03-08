@@ -8,6 +8,7 @@ import { TonWalletProvider } from "@/hooks/useTonWallet";
 import { MultiWalletProvider } from "@/hooks/useMultiWallet";
 import { SplashScreen } from "@/components/SplashScreen";
 import { AnimatedRoutes } from "@/components/layout/AnimatedRoutes";
+import { useTheme } from "@/hooks/useTheme";
 
 const queryClient = new QueryClient();
 
