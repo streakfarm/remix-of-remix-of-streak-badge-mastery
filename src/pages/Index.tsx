@@ -12,7 +12,7 @@ import { motion } from 'framer-motion';
 const Index = () => {
   const { profile, isLoading } = useProfile();
 
-  if (isLoading) {
+  if (isLoading && !profile) {
     return (
       <AppLayout>
         <div className="flex items-center justify-center min-h-[60vh]">
