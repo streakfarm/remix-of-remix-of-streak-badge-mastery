@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { BoxCard } from '@/components/box/BoxCard';
 import { BoxOpenAnimation } from '@/components/box/BoxOpenAnimation';
@@ -8,11 +9,13 @@ import { useTelegram } from '@/hooks/useTelegram';
 import { Package, Clock, History, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useEffect, useState as useReactState } from 'react';
+import { AnimatePresence } from 'framer-motion';
 
 export default function Boxes() {
   const { boxes, openedBoxes, expiredCount, openBox, availableCount, nextBoxTime, isLoading } = useBoxes();
   const { totalMultiplier } = useProfile();
   const { hapticFeedback } = useTelegram();
+  const navigate = useNavigate();
   
   const [openingBox, setOpeningBox] = useState<Box | null>(null);
   const [showAnimation, setShowAnimation] = useState(false);
@@ -62,6 +65,8 @@ export default function Boxes() {
     setShowAnimation(false);
     setOpeningBox(null);
     setOpenedResult(null);
+    // Navigate back to home after box open
+    navigate('/');
   };
 
   if (isLoading) {
@@ -180,14 +185,16 @@ export default function Boxes() {
       </div>
 
       {/* Open animation overlay */}
-      {showAnimation && openingBox && openedResult && (
-        <BoxOpenAnimation
-          box={openingBox}
-          points={openedResult.points}
-          multiplier={openedResult.multiplier}
-          onComplete={handleAnimationComplete}
-        />
-      )}
+      <AnimatePresence>
+        {showAnimation && openingBox && openedResult && (
+          <BoxOpenAnimation
+            box={openingBox}
+            points={openedResult.points}
+            multiplier={openedResult.multiplier}
+            onComplete={handleAnimationComplete}
+          />
+        )}
+      </AnimatePresence>
     </AppLayout>
   );
 }
