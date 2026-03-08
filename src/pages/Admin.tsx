@@ -83,7 +83,6 @@ export default function Admin() {
     { id: 'themes', label: 'Themes', icon: Paintbrush },
     { id: 'notifications', label: 'Notify', icon: Bell },
     { id: 'config', label: 'Config', icon: Settings },
-    { id: 'config', label: 'Config', icon: Settings },
   ];
 
   return (
