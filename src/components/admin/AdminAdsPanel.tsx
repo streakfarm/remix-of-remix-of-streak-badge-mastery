@@ -151,8 +151,8 @@ export function AdminAdsPanel() {
   };
 
   const handleSubmit = async () => {
-    if (!adForm.title || !adForm.redirect_url) {
-      toast.error('Title and Redirect URL are required');
+    if (!adForm.title || (!adForm.redirect_url && !adForm.ad_code)) {
+      toast.error('Title and either Ad Code or Redirect URL is required');
       return;
     }
     try {
