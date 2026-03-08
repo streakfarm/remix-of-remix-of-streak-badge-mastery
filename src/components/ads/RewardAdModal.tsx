@@ -33,7 +33,7 @@ export function RewardAdModal({
       if (ad) trackImpression.mutate(ad.id);
       setProgress(0);
       setIsWatching(false);
-      setCanSkip(false);
+      setCompleted(false);
       setCompleted(false);
     }
   }, [isOpen, ads]);
