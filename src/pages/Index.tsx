@@ -6,6 +6,7 @@ import { BoxPreview } from '@/components/dashboard/BoxPreview';
 import { BadgeShowcase } from '@/components/dashboard/BadgeShowcase';
 import { AnnouncementBanner } from '@/components/dashboard/AnnouncementBanner';
 import { EventsBanner } from '@/components/events/EventsBanner';
+import { AdBanner } from '@/components/ads/AdBanner';
 import { useProfile } from '@/hooks/useProfile';
 import { motion } from 'framer-motion';
 
