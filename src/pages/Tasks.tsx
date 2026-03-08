@@ -5,6 +5,7 @@ import { TaskList } from '@/components/tasks/TaskList';
 import { AdWatchCard } from '@/components/tasks/AdWatchCard';
 import { WalletBanner } from '@/components/gamification/WalletBanner';
 import { FireTrail } from '@/components/gamification/FireTrail';
+import { AdBanner } from '@/components/ads/AdBanner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { useTasks } from '@/hooks/useTasks';
