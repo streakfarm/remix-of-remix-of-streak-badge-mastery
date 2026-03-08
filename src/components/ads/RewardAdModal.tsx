@@ -24,7 +24,7 @@ export function RewardAdModal({
   const [currentAd, setCurrentAd] = useState<Ad | null>(null);
   const [progress, setProgress] = useState(0);
   const [isWatching, setIsWatching] = useState(false);
-  const [_canSkip, _setCanSkip] = useState(false);
+  const [completed, setCompleted] = useState(false);
   const [completed, setCompleted] = useState(false);
 
   useEffect(() => {
