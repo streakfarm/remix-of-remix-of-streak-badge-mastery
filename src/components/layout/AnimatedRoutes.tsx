@@ -34,6 +34,8 @@ export function AnimatedRoutes() {
     <AnimatePresence mode="wait" initial={false}>
       <Routes location={location} key={location.pathname}>
         <Route path="/auth" element={<PublicRoute><PageTransition><Auth /></PageTransition></PublicRoute>} />
+        <Route path="/forgot-password" element={<PublicRoute><PageTransition><ForgotPassword /></PageTransition></PublicRoute>} />
+        <Route path="/reset-password" element={<PageTransition><ResetPassword /></PageTransition>} />
         <Route path="/" element={<ProtectedRoute><PageTransition><Index /></PageTransition></ProtectedRoute>} />
         <Route path="/boxes" element={<ProtectedRoute><PageTransition><Boxes /></PageTransition></ProtectedRoute>} />
         <Route path="/badges" element={<ProtectedRoute><PageTransition><Badges /></PageTransition></ProtectedRoute>} />
