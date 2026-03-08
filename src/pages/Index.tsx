@@ -4,7 +4,7 @@ import { PointsDisplay } from '@/components/dashboard/PointsDisplay';
 import { StreakDisplay } from '@/components/dashboard/StreakDisplay';
 import { BoxPreview } from '@/components/dashboard/BoxPreview';
 import { BadgeShowcase } from '@/components/dashboard/BadgeShowcase';
-import { WalletBanner } from '@/components/gamification/WalletBanner';
+import { WalletBanner } from '@/components/gamification/WalletBanner'; // kept for other pages
 import { AnnouncementBanner } from '@/components/dashboard/AnnouncementBanner';
 import { EventsBanner } from '@/components/events/EventsBanner';
 import { useProfile } from '@/hooks/useProfile';
