@@ -292,7 +292,7 @@ export default function Profile() {
           </TabsContent>
 
           <TabsContent value="referral" className="mt-4">
-            <ReferralCard />
+            <AdvancedReferralCard />
           </TabsContent>
 
           <TabsContent value="multiplier" className="mt-4">
