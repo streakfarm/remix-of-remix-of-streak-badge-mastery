@@ -1,16 +1,48 @@
 import { AppLayout } from '@/components/layout/AppLayout';
 import { useEvents } from '@/hooks/useEvents';
+import { useBadges, Badge } from '@/hooks/useBadges';
 import { useTelegram } from '@/hooks/useTelegram';
+import { useTonWalletContext } from '@/hooks/useTonWallet';
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
-import { Calendar, Users, Zap, Clock, Check, Trophy, Gift, Sparkles } from 'lucide-react';
+import { Calendar, Users, Zap, Clock, Check, Trophy, Gift, Sparkles, Award } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
+import { BadgeCard } from '@/components/badge/BadgeCard';
+import { BadgeDetail } from '@/components/badge/BadgeDetail';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+const BADGE_CATEGORY_CONFIG = {
+  all: { label: 'All', emoji: '🏆' },
+  streak: { label: 'Streak', emoji: '🔥' },
+  achievement: { label: 'Achieve', emoji: '⭐' },
+  wallet: { label: 'Wallet', emoji: '👛' },
+  special: { label: 'Special', emoji: '✨' },
+};
 
 export default function Events() {
   const { events, participations, isParticipating, joinEvent, isLoading } = useEvents();
+  const { allBadges, ownedBadges, ownedBadgeIds, totalMultiplier, badgeCount, badgesByCategory, isLoading: badgesLoading } = useBadges();
   const { hapticFeedback } = useTelegram();
+  const { isConnected, connect } = useTonWalletContext();
+  const [selectedBadge, setSelectedBadge] = useState<{ badge: Badge; isOwned: boolean; earnedAt?: string } | null>(null);
+  const [badgeTab, setBadgeTab] = useState('all');
+
+  const handleBadgeClick = (badge: Badge) => {
+    hapticFeedback('selection');
+    const owned = ownedBadges.find(b => b.id === badge.id);
+    setSelectedBadge({
+      badge,
+      isOwned: ownedBadgeIds.has(badge.id),
+      earnedAt: owned?.earnedAt,
+    });
+  };
+
+  const getFilteredBadges = () => {
+    if (badgeTab === 'all') return allBadges;
+    return badgesByCategory[badgeTab as keyof typeof badgesByCategory] || [];
+  };
 
   return (
     <AppLayout>
@@ -23,12 +55,113 @@ export default function Events() {
           >
             <span className="text-4xl">🎪</span>
           </motion.div>
-          <h1 className="text-2xl font-bold">Events & Campaigns</h1>
+          <h1 className="text-2xl font-bold">Events & Badges</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Join live events for bonus rewards & exclusive badges
+            Join events & collect badges for bonus rewards
           </p>
         </div>
 
+        {/* ===== BADGES SECTION ===== */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Award className="w-5 h-5 text-primary" />
+            <h2 className="font-bold text-lg">Badge Collection</h2>
+          </div>
+
+          {/* Badge stats */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-card rounded-xl border border-border p-3 text-center">
+              <span className="text-2xl font-bold text-foreground">{badgeCount}</span>
+              <p className="text-xs text-muted-foreground">Badges Owned</p>
+            </div>
+            <div className="bg-primary/10 rounded-xl border border-primary/20 p-3 text-center">
+              <span className="text-2xl font-bold text-primary">{totalMultiplier.toFixed(1)}×</span>
+              <p className="text-xs text-muted-foreground">Total Multiplier</p>
+            </div>
+          </div>
+
+          {/* Badge category tabs */}
+          <Tabs value={badgeTab} onValueChange={setBadgeTab}>
+            <TabsList className="w-full grid grid-cols-5 h-auto">
+              {Object.entries(BADGE_CATEGORY_CONFIG).map(([key, { label, emoji }]) => (
+                <TabsTrigger
+                  key={key}
+                  value={key}
+                  className="flex flex-col gap-0.5 py-2 text-[10px]"
+                >
+                  <span className="text-base">{emoji}</span>
+                  <span>{label}</span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+
+            <TabsContent value={badgeTab} className="mt-3">
+              {badgesLoading ? (
+                <div className="grid grid-cols-3 gap-3">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="h-32 rounded-xl skeleton-gaming" />
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {/* Owned badges */}
+                  {badgeTab === 'all' && badgeCount > 0 && (
+                    <div>
+                      <h3 className="text-sm font-semibold mb-2 flex items-center gap-2">
+                        ✅ My Badges <span className="text-muted-foreground">({badgeCount})</span>
+                      </h3>
+                      <div className="grid grid-cols-3 gap-3">
+                        {ownedBadges.map((badge) => (
+                          <BadgeCard
+                            key={badge.id}
+                            badge={badge}
+                            isOwned={true}
+                            earnedAt={badge.earnedAt}
+                            onClick={() => handleBadgeClick(badge)}
+                            isWalletConnected={isConnected}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Available badges */}
+                  <div>
+                    <h3 className="text-sm font-semibold mb-2 flex items-center gap-2">
+                      {badgeTab === 'all' ? (
+                        <>🔒 Available to Earn <span className="text-muted-foreground">({allBadges.length - badgeCount})</span></>
+                      ) : (
+                        <>{BADGE_CATEGORY_CONFIG[badgeTab as keyof typeof BADGE_CATEGORY_CONFIG]?.emoji} {BADGE_CATEGORY_CONFIG[badgeTab as keyof typeof BADGE_CATEGORY_CONFIG]?.label} <span className="text-muted-foreground">({getFilteredBadges().length})</span></>
+                      )}
+                    </h3>
+                    <div className="grid grid-cols-3 gap-3">
+                      {getFilteredBadges()
+                        .filter(badge => badgeTab !== 'all' || !ownedBadgeIds.has(badge.id))
+                        .map((badge) => (
+                          <BadgeCard
+                            key={badge.id}
+                            badge={badge}
+                            isOwned={ownedBadgeIds.has(badge.id)}
+                            onClick={() => handleBadgeClick(badge)}
+                            isWalletConnected={isConnected}
+                          />
+                        ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
+        </div>
+
+        {/* Divider */}
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-px bg-border" />
+          <span className="text-xs text-muted-foreground font-medium">LIVE EVENTS</span>
+          <div className="flex-1 h-px bg-border" />
+        </div>
+
+        {/* ===== EVENTS SECTION ===== */}
         {isLoading ? (
           <div className="space-y-3">
             {[1, 2].map(i => (
@@ -67,7 +200,7 @@ export default function Events() {
           </div>
         )}
 
-        {/* Past events section placeholder */}
+        {/* Past events section */}
         <div className="pt-4">
           <h3 className="font-semibold text-sm text-muted-foreground mb-3 flex items-center gap-2">
             <Trophy className="w-4 h-4" />
@@ -78,6 +211,18 @@ export default function Events() {
           </Card>
         </div>
       </div>
+
+      {/* Badge detail modal */}
+      {selectedBadge && (
+        <BadgeDetail
+          badge={selectedBadge.badge}
+          isOwned={selectedBadge.isOwned}
+          earnedAt={selectedBadge.earnedAt}
+          onClose={() => setSelectedBadge(null)}
+          isWalletConnected={isConnected}
+          onConnectWallet={connect}
+        />
+      )}
     </AppLayout>
   );
 }
@@ -124,7 +269,6 @@ function EventFullCard({
       transition={{ delay: index * 0.1 }}
     >
       <Card className="overflow-hidden">
-        {/* Header with gradient */}
         <div className={cn(
           'p-5 bg-gradient-to-r',
           event.event_type === 'referral'
@@ -166,7 +310,6 @@ function EventFullCard({
           </div>
         </div>
 
-        {/* Rewards section */}
         <div className="p-4 space-y-3">
           {rewards.bonus_points && (
             <div className="flex items-center gap-2 text-sm">
@@ -176,7 +319,6 @@ function EventFullCard({
             </div>
           )}
 
-          {/* Join / Status */}
           {isJoined ? (
             <div className="flex items-center justify-between p-3 rounded-xl bg-success/10 border border-success/20">
               <div className="flex items-center gap-2">
