@@ -29,9 +29,6 @@ const Index = () => {
         {/* Announcement */}
         <AnnouncementBanner />
 
-        {/* Wallet Banner */}
-        <WalletBanner />
-
         {/* Live Events */}
         <EventsBanner />
 

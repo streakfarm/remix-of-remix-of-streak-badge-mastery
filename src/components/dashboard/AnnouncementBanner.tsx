@@ -81,6 +81,5 @@ export function AnnouncementBanner() {
           </div>
         </div>
       </motion.div>
-    </AnimatePresence>
   );
 }
