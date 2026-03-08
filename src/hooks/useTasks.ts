@@ -92,7 +92,14 @@ export function useTasks() {
 
       return result;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Optimistically update profile cache with new balance
+      queryClient.setQueriesData({ queryKey: ['profile'] }, (old: any) => {
+        if (old && data?.new_balance !== undefined) {
+          return { ...old, raw_points: data.new_balance, total_tasks_completed: data.total_tasks_completed };
+        }
+        return old;
+      });
       queryClient.invalidateQueries({ queryKey: ['task-completions'] });
       queryClient.invalidateQueries({ queryKey: ['profile'] });
     },
@@ -127,7 +134,20 @@ export function useTasks() {
 
       return result;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Optimistically update profile cache with new balance and streak
+      queryClient.setQueriesData({ queryKey: ['profile'] }, (old: any) => {
+        if (old && data?.new_balance !== undefined) {
+          return {
+            ...old,
+            raw_points: data.new_balance,
+            streak_current: data.checkin.streak_current,
+            streak_best: data.checkin.streak_best,
+            last_checkin: new Date().toISOString(),
+          };
+        }
+        return old;
+      });
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: ['badges'] });
     },
