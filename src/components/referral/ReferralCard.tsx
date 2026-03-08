@@ -25,7 +25,10 @@ export function ReferralCard() {
   const { hapticFeedback, webApp } = useTelegram();
   const [copied, setCopied] = useState(false);
 
-  const referralLink = `https://t.me/StreakFarmBot?start=${profile?.ref_code || ''}`;
+  const isTelegramEnv = !!window.Telegram?.WebApp?.initData;
+  const referralLink = isTelegramEnv 
+    ? `https://t.me/StreakFarmBot?start=${profile?.ref_code || ''}`
+    : `${window.location.origin}?ref=${profile?.ref_code || ''}`;
   const referralCode = profile?.ref_code || '';
 
   const handleCopy = async () => {
