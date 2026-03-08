@@ -53,7 +53,7 @@ export function RewardAdModal({
       if (elapsed >= duration) {
         clearInterval(timer);
         setCompleted(true);
-        setCanSkip(true);
+        setCompleted(true);
       }
     }, interval);
 
