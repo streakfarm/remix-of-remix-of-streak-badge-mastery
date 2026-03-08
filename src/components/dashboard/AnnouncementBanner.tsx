@@ -23,13 +23,6 @@ export function AnnouncementBanner() {
         </div>
 
         <div className="relative z-10 p-4">
-          {/* Dismiss button */}
-          <button
-            onClick={() => setDismissed(true)}
-            className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
 
           {/* Header with pulsing icon */}
           <div className="flex items-center gap-2.5 mb-2.5">
