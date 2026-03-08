@@ -89,7 +89,7 @@ export function useTelegram() {
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
 
-    if (tg) {
+    if (tg && tg.initData) {
       setWebApp(tg);
       setUser(tg.initDataUnsafe.user || null);
       setIsTelegram(true);
