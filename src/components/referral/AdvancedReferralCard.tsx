@@ -14,7 +14,7 @@ export function AdvancedReferralCard() {
   const { profile } = useProfile();
   const { tiers, currentTier, nextTier, progressToNext, totalReferrals } = useReferralTiers();
   const { referrals, totalEarned, referredBy } = useReferrals();
-  const { hapticFeedback, shareRef } = useTelegram();
+  const { hapticFeedback, shareRef, isTelegram } = useTelegram();
 
   const refCode = profile?.ref_code || '';
   const shareUrl = isTelegram 
