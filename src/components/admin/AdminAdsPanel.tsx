@@ -40,7 +40,12 @@ interface Ad {
   created_at: string | null;
 }
 
-const PLACEMENTS = ['banner', 'interstitial', 'native', 'reward'] as const;
+const PLACEMENTS = [
+  { value: 'banner', label: 'Banner', desc: 'Dashboard & page banners' },
+  { value: 'native', label: 'Native', desc: 'Compact inline ads in task lists' },
+  { value: 'reward', label: 'Reward', desc: 'Shown in Watch Ad modal for points' },
+  { value: 'interstitial', label: 'Interstitial', desc: 'Full screen popup ads' },
+] as const;
 
 const defaultAd = {
   title: '',
