@@ -55,14 +55,18 @@ export function useProfile() {
       
       const { data, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select('id, user_id, telegram_id, username, first_name, avatar_url, raw_points, streak_current, streak_best, last_checkin, total_boxes_opened, total_tasks_completed, total_referrals, wallet_address, wallet_type, ref_code, multiplier_permanent, created_at, is_banned, wallet_connected_at')
         .eq('user_id', session.user.id)
-        .single();
+        .maybeSingle();
       
-      if (error) throw error;
-      return data as Profile;
+      if (error) {
+        console.error('Profile fetch error:', error);
+        return null;
+      }
+      return data as Profile | null;
     },
     enabled: !!session?.user?.id,
+    retry: 2,
   });
 
   const { data: leaderboardEntry } = useQuery({
