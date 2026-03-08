@@ -65,6 +65,8 @@ export default function Boxes() {
     setShowAnimation(false);
     setOpeningBox(null);
     setOpenedResult(null);
+    // Navigate back to home after box open
+    navigate('/');
   };
 
   if (isLoading) {
