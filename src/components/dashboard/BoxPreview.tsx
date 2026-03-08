@@ -100,7 +100,7 @@ export function BoxPreview() {
           {availableCount > 0 ? (
             <div className="flex items-center gap-2 text-amber-400/80">
               <AlertTriangle className="w-3.5 h-3.5" />
-              <span>Boxes expire in 3 hours - don't miss out!</span>
+              <span>Boxes expire in 1 hour - don't miss out!</span>
             </div>
           ) : (
             <div className="text-muted-foreground">

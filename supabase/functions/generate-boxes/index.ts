@@ -23,7 +23,7 @@ interface BoxConfig {
 
 const DEFAULT_CONFIG: BoxConfig = {
   boxes_per_hour: 1,
-  box_expiry_hours: 3,
+  box_expiry_hours: 1,
   max_boxes_per_day: 24,
   rarity_weights: {
     common: 85,
