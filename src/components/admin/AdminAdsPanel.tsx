@@ -38,6 +38,7 @@ interface Ad {
   start_date: string | null;
   end_date: string | null;
   created_at: string | null;
+  ad_code: string | null;
 }
 
 const PLACEMENTS = [
