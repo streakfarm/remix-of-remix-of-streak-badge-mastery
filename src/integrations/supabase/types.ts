@@ -155,6 +155,61 @@ export type Database = {
           },
         ]
       }
+      event_participations: {
+        Row: {
+          claimed_at: string | null
+          event_id: string
+          id: string
+          is_claimed: boolean | null
+          joined_at: string | null
+          points_earned: number | null
+          tasks_completed: number | null
+          user_id: string
+        }
+        Insert: {
+          claimed_at?: string | null
+          event_id: string
+          id?: string
+          is_claimed?: boolean | null
+          joined_at?: string | null
+          points_earned?: number | null
+          tasks_completed?: number | null
+          user_id: string
+        }
+        Update: {
+          claimed_at?: string | null
+          event_id?: string
+          id?: string
+          is_claimed?: boolean | null
+          joined_at?: string | null
+          points_earned?: number | null
+          tasks_completed?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_participations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "seasonal_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_participations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_participations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           created_at: string | null
@@ -428,6 +483,47 @@ export type Database = {
           },
         ]
       }
+      referral_tiers: {
+        Row: {
+          badge_reward: string | null
+          bonus_points: number
+          created_at: string | null
+          icon_emoji: string | null
+          id: string
+          min_referrals: number
+          multiplier_bonus: number | null
+          name: string
+        }
+        Insert: {
+          badge_reward?: string | null
+          bonus_points?: number
+          created_at?: string | null
+          icon_emoji?: string | null
+          id: string
+          min_referrals?: number
+          multiplier_bonus?: number | null
+          name: string
+        }
+        Update: {
+          badge_reward?: string | null
+          bonus_points?: number
+          created_at?: string | null
+          icon_emoji?: string | null
+          id?: string
+          min_referrals?: number
+          multiplier_bonus?: number | null
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_tiers_badge_reward_fkey"
+            columns: ["badge_reward"]
+            isOneToOne: false
+            referencedRelation: "badges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       referrals: {
         Row: {
           created_at: string | null
@@ -486,6 +582,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      seasonal_events: {
+        Row: {
+          bonus_multiplier: number | null
+          created_at: string | null
+          current_participants: number | null
+          description: string | null
+          end_date: string
+          event_type: string
+          icon_emoji: string | null
+          id: string
+          is_active: boolean | null
+          max_participants: number | null
+          name: string
+          rewards: Json | null
+          start_date: string
+        }
+        Insert: {
+          bonus_multiplier?: number | null
+          created_at?: string | null
+          current_participants?: number | null
+          description?: string | null
+          end_date: string
+          event_type?: string
+          icon_emoji?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_participants?: number | null
+          name: string
+          rewards?: Json | null
+          start_date: string
+        }
+        Update: {
+          bonus_multiplier?: number | null
+          created_at?: string | null
+          current_participants?: number | null
+          description?: string | null
+          end_date?: string
+          event_type?: string
+          icon_emoji?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_participants?: number | null
+          name?: string
+          rewards?: Json | null
+          start_date?: string
+        }
+        Relationships: []
       }
       task_completions: {
         Row: {
