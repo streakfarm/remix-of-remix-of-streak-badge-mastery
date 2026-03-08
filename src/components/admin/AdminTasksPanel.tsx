@@ -9,7 +9,8 @@ import {
   XCircle,
   Clock,
   Repeat,
-  Wallet
+  Wallet,
+  ExternalLink
 } from 'lucide-react';
 import { useAdmin, Task } from '@/hooks/useAdmin';
 import { Button } from '@/components/ui/button';
