@@ -77,6 +77,7 @@ export default function Admin() {
     { id: 'badges', label: 'Badges', icon: Award },
     { id: 'events', label: 'Events', icon: Calendar },
     { id: 'boxes', label: 'Boxes', icon: Package },
+    { id: 'ads', label: 'Ads', icon: Megaphone },
     { id: 'notifications', label: 'Notify', icon: Bell },
     { id: 'config', label: 'Config', icon: Settings },
   ];
