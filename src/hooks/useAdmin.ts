@@ -298,7 +298,7 @@ export function useAdmin() {
           id, 
           value,
           updated_at: new Date().toISOString(),
-          updated_by: profile?.id 
+          updated_by: profile?.user_id 
         })
         .select()
         .single();
