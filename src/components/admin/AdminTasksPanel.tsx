@@ -278,6 +278,16 @@ export function AdminTasksPanel() {
                 </div>
               </div>
 
+              <div>
+                <Label>Action URL (redirect link)</Label>
+                <Input 
+                  value={(taskForm as any).action_url || ''}
+                  onChange={(e) => setTaskForm(prev => ({ ...prev, action_url: e.target.value || null } as any))}
+                  placeholder="https://example.com/follow"
+                />
+                <p className="text-xs text-muted-foreground mt-1">User will be redirected here when completing task</p>
+              </div>
+
               <div className="flex gap-2 justify-end">
                 <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                   Cancel
