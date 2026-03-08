@@ -185,14 +185,16 @@ export default function Boxes() {
       </div>
 
       {/* Open animation overlay */}
-      {showAnimation && openingBox && openedResult && (
-        <BoxOpenAnimation
-          box={openingBox}
-          points={openedResult.points}
-          multiplier={openedResult.multiplier}
-          onComplete={handleAnimationComplete}
-        />
-      )}
+      <AnimatePresence>
+        {showAnimation && openingBox && openedResult && (
+          <BoxOpenAnimation
+            box={openingBox}
+            points={openedResult.points}
+            multiplier={openedResult.multiplier}
+            onComplete={handleAnimationComplete}
+          />
+        )}
+      </AnimatePresence>
     </AppLayout>
   );
 }
