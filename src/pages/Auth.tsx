@@ -236,6 +236,15 @@ export default function Auth() {
                 </>
               )}
             </motion.button>
+
+            {isLogin && (
+              <Link
+                to="/forgot-password"
+                className="block text-center text-xs text-muted-foreground hover:text-primary transition-colors mt-2"
+              >
+                Forgot password?
+              </Link>
+            )}
           </form>
 
           {/* Bonus info */}
