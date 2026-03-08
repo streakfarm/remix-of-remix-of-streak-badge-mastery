@@ -11,6 +11,8 @@ import Leaderboard from '@/pages/Leaderboard';
 import Events from '@/pages/Events';
 import Admin from '@/pages/Admin';
 import Auth from '@/pages/Auth';
+import ForgotPassword from '@/pages/ForgotPassword';
+import ResetPassword from '@/pages/ResetPassword';
 import NotFound from '@/pages/NotFound';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -32,6 +34,8 @@ export function AnimatedRoutes() {
     <AnimatePresence mode="wait" initial={false}>
       <Routes location={location} key={location.pathname}>
         <Route path="/auth" element={<PublicRoute><PageTransition><Auth /></PageTransition></PublicRoute>} />
+        <Route path="/forgot-password" element={<PublicRoute><PageTransition><ForgotPassword /></PageTransition></PublicRoute>} />
+        <Route path="/reset-password" element={<PageTransition><ResetPassword /></PageTransition>} />
         <Route path="/" element={<ProtectedRoute><PageTransition><Index /></PageTransition></ProtectedRoute>} />
         <Route path="/boxes" element={<ProtectedRoute><PageTransition><Boxes /></PageTransition></ProtectedRoute>} />
         <Route path="/badges" element={<ProtectedRoute><PageTransition><Badges /></PageTransition></ProtectedRoute>} />

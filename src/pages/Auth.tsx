@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable/index';
 import { toast } from 'sonner';
 import { Mail, Lock, User, Eye, EyeOff, ArrowRight, Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -235,6 +236,15 @@ export default function Auth() {
                 </>
               )}
             </motion.button>
+
+            {isLogin && (
+              <Link
+                to="/forgot-password"
+                className="block text-center text-xs text-muted-foreground hover:text-primary transition-colors mt-2"
+              >
+                Forgot password?
+              </Link>
+            )}
           </form>
 
           {/* Bonus info */}
