@@ -14,10 +14,12 @@ export function AdvancedReferralCard() {
   const { profile } = useProfile();
   const { tiers, currentTier, nextTier, progressToNext, totalReferrals } = useReferralTiers();
   const { referrals, totalEarned, referredBy } = useReferrals();
-  const { hapticFeedback, shareRef } = useTelegram();
+  const { hapticFeedback, shareRef, isTelegram } = useTelegram();
 
   const refCode = profile?.ref_code || '';
-  const shareUrl = `${window.location.origin}?ref=${refCode}`;
+  const shareUrl = isTelegram 
+    ? `https://t.me/StreakFarmBot?start=${refCode}`
+    : `${window.location.origin}?ref=${refCode}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(shareUrl);
