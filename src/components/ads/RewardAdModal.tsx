@@ -25,7 +25,6 @@ export function RewardAdModal({
   const [progress, setProgress] = useState(0);
   const [isWatching, setIsWatching] = useState(false);
   const [completed, setCompleted] = useState(false);
-  const [completed, setCompleted] = useState(false);
 
   useEffect(() => {
     if (isOpen && ads.length > 0) {
