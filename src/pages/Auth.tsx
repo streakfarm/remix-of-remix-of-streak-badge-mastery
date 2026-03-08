@@ -41,21 +41,6 @@ export default function Auth() {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    setLoading(true);
-    try {
-      const result = await lovable.auth.signInWithOAuth('google', {
-        redirect_uri: window.location.origin,
-      });
-      if (result?.error) {
-        toast.error('Google login failed');
-      }
-    } catch (error: any) {
-      toast.error(error.message || 'Google login failed');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen mobile-vh bg-background flex flex-col items-center justify-center relative overflow-hidden">
