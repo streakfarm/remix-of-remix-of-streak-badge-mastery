@@ -6,16 +6,14 @@ import { BrowserRouter } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/providers/AuthProvider";
 import { TonWalletProvider } from "@/hooks/useTonWallet";
 import { SplashScreen } from "@/components/SplashScreen";
-import { useTelegram } from "@/hooks/useTelegram";
 import { AnimatedRoutes } from "@/components/layout/AnimatedRoutes";
 
 const queryClient = new QueryClient();
 
 function AppContent() {
   const { isLoading, isAuthenticated, authError, retryAuth } = useAuth();
-  const { isTelegram } = useTelegram();
 
-  console.log("AppContent state:", { isLoading, isAuthenticated, isTelegram, authError });
+  console.log("AppContent state:", { isLoading, isAuthenticated, authError });
 
   // Show error screen if auth failed
   if (authError) {
@@ -25,11 +23,6 @@ function AppContent() {
   // Show splash while loading
   if (isLoading) {
     return <SplashScreen />;
-  }
-
-  // If not in Telegram and not authenticated, show Telegram prompt
-  if (!isTelegram && !isAuthenticated) {
-    return <SplashScreen showTelegramPrompt />;
   }
 
   return (

@@ -50,6 +50,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (event === 'SIGNED_IN') {
           queryClient.invalidateQueries();
           setAuthError(null);
+          setIsLoading(false);
         } else if (event === 'SIGNED_OUT') {
           queryClient.clear();
         }
@@ -60,7 +61,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       console.log('Initial session:', session?.user?.id || 'none');
       setSession(session);
-      if (session) {
+      // If we have a session or not in Telegram, stop loading
+      if (session || !window.Telegram?.WebApp?.initData) {
         setIsLoading(false);
       }
     });
@@ -69,22 +71,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [queryClient]);
 
   const attemptTelegramLogin = useCallback(async () => {
-    // Wait for Telegram to be ready
-    if (!isReady) {
-      console.log('Telegram not ready yet');
-      return;
-    }
-    
-    // If already have session, we're done
-    if (session) {
-      console.log('Already have session');
-      setIsLoading(false);
-      return;
-    }
-    
-    // Skip if not in Telegram or no initData
-    if (!initData || !initData.trim()) {
-      console.log('No initData, not in Telegram WebApp');
+    if (!isReady || session || !initData || !initData.trim()) {
       setIsLoading(false);
       return;
     }
@@ -92,7 +79,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     console.log('Attempting Telegram auto-login with initData length:', initData.length);
     setAuthError(null);
 
-    // Add timeout to prevent infinite loading
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000);
 
@@ -101,9 +87,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/telegram-auth`,
         {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ initData }),
           signal: controller.signal,
         }
@@ -111,16 +95,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       clearTimeout(timeoutId);
       const result = await response.json();
-      console.log('Telegram auth response:', response.status, result);
 
       if (!response.ok) {
-        console.error('Telegram auth failed:', result.error);
         setAuthError(result.error || 'Authentication failed');
         setIsLoading(false);
         return;
       }
 
-      // If we got a session token, sign in
       if (result.access_token && result.refresh_token) {
         const { error } = await supabase.auth.setSession({
           access_token: result.access_token,
@@ -128,7 +109,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         });
         
         if (error) {
-          console.error('Failed to set session:', error);
           setAuthError('Session error. Please restart the app.');
         } else {
           hapticFeedback('success');
@@ -139,10 +119,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch (error: any) {
       clearTimeout(timeoutId);
       if (error.name === 'AbortError') {
-        console.error('Telegram auth timeout');
         setAuthError('Connection timeout. Check your internet.');
       } else {
-        console.error('Telegram auth error:', error);
         setAuthError('Connection error. Please try again.');
       }
     } finally {
@@ -154,11 +132,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     if (hasAttemptedTelegramLogin.current) return;
     
-    if (isReady && !session) {
+    if (isTelegram && isReady && !session) {
       hasAttemptedTelegramLogin.current = true;
       attemptTelegramLogin();
     }
-  }, [isReady, session, attemptTelegramLogin]);
+  }, [isTelegram, isReady, session, attemptTelegramLogin]);
 
   const retryAuth = useCallback(() => {
     hasAttemptedTelegramLogin.current = false;

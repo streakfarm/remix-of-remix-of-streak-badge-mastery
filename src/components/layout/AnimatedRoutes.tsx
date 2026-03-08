@@ -1,6 +1,7 @@
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { PageTransition } from './PageTransition';
+import { useAuth } from '@/providers/AuthProvider';
 import Index from '@/pages/Index';
 import Boxes from '@/pages/Boxes';
 import Badges from '@/pages/Badges';
@@ -8,7 +9,20 @@ import Tasks from '@/pages/Tasks';
 import Profile from '@/pages/Profile';
 import Leaderboard from '@/pages/Leaderboard';
 import Admin from '@/pages/Admin';
+import Auth from '@/pages/Auth';
 import NotFound from '@/pages/NotFound';
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useAuth();
+  if (!isAuthenticated) return <Navigate to="/auth" replace />;
+  return <>{children}</>;
+}
+
+function PublicRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useAuth();
+  if (isAuthenticated) return <Navigate to="/" replace />;
+  return <>{children}</>;
+}
 
 export function AnimatedRoutes() {
   const location = useLocation();
@@ -16,70 +30,15 @@ export function AnimatedRoutes() {
   return (
     <AnimatePresence mode="wait" initial={false}>
       <Routes location={location} key={location.pathname}>
-        <Route
-          path="/"
-          element={
-            <PageTransition>
-              <Index />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/boxes"
-          element={
-            <PageTransition>
-              <Boxes />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/badges"
-          element={
-            <PageTransition>
-              <Badges />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/tasks"
-          element={
-            <PageTransition>
-              <Tasks />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <PageTransition>
-              <Profile />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/leaderboard"
-          element={
-            <PageTransition>
-              <Leaderboard />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/admin"
-          element={
-            <PageTransition>
-              <Admin />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="*"
-          element={
-            <PageTransition>
-              <NotFound />
-            </PageTransition>
-          }
-        />
+        <Route path="/auth" element={<PublicRoute><PageTransition><Auth /></PageTransition></PublicRoute>} />
+        <Route path="/" element={<ProtectedRoute><PageTransition><Index /></PageTransition></ProtectedRoute>} />
+        <Route path="/boxes" element={<ProtectedRoute><PageTransition><Boxes /></PageTransition></ProtectedRoute>} />
+        <Route path="/badges" element={<ProtectedRoute><PageTransition><Badges /></PageTransition></ProtectedRoute>} />
+        <Route path="/tasks" element={<ProtectedRoute><PageTransition><Tasks /></PageTransition></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><PageTransition><Profile /></PageTransition></ProtectedRoute>} />
+        <Route path="/leaderboard" element={<ProtectedRoute><PageTransition><Leaderboard /></PageTransition></ProtectedRoute>} />
+        <Route path="/admin" element={<ProtectedRoute><PageTransition><Admin /></PageTransition></ProtectedRoute>} />
+        <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
     </AnimatePresence>
   );
